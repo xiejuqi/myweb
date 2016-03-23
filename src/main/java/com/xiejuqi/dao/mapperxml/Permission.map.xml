@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xiejuqi.dao.icreate.PermissionMapper">
+
+
+	<resultMap type="com.xiejuqi.domain.Permission" id="result-map-01">
+		<result property="id" column="PERMISSION_ID" />
+		<result property="name" column="PERMISSION_NAME" />
+	</resultMap>
+	
+	<resultMap id="resourceResultMap" type="com.xiejuqi.domain.Resource">
+		<id property="sp_id" column="SP_ID" />
+		<id property="sp_name" column="SP_NAME" />
+		<id property="sp_parent_id" column="SP_PARENT_ID" />
+		<id property="sys_id" column="SYS_ID" />
+		<id property="sp_desc" column="SP_DESC" />
+		<id property="href" column="HREF" />
+		<id property="target" column="TARGET" />
+		<id property="sp_visible" column="SP_VISIBLE" />
+		<id property="sp_type" column="SP_TYPE" />
+		<id property="icon" column="ICON" />
+		<id property="version" column="VERSION" />
+		<id property="permission" column="PERMISSION" />
+		<id property="rank" column="RANK" />
+	</resultMap>
+	
+	<select id="findPermissionById" parameterType="java.lang.Integer" resultMap="result-map-01">
+		SELECT *
+		FROM
+			tbl_permission
+		WHERE 
+			PERMISSION_ID = #{permissionid} 
+	</select>
+	
+	<select id="findPermissionByUserId" parameterType="com.xiejuqi.domain.TmsUser"  resultMap="resourceResultMap">
+		SELECT distinct SP.SP_PARENT_ID,SP.SP_ID,SP.SYS_ID,SP.SP_NAME,SP.SP_DESC,SP.HREF,SP.TARGET,SP.SP_VISIBLE,SP.PERMISSION,SP.VERSION,SP.SP_TYPE,SP.ICON,SP.RANK
+        FROM SECURITY_PERMISSION SP
+		LEFT JOIN SECURITY_ROLE_PERMISSION SRP on SP.SP_ID = SRP.SP_ID
+		LEFT JOIN SECURITY_USER_ROLE SUR ON SRP.SR_ID = SUR.SR_ID
+		LEFT JOIN SECURITY_USER SU on SUR.SU_ID = SU.SU_ID
+        WHERE   SP.SP_TYPE     !=  'button'
+        <if test="account != null">
+        		 AND   SU.SU_ACCOUNT  =   #{account}
+        </if>
+        <if test="sysId != null">
+        		AND   SP.SYS_ID      =   #{sysId}
+        </if>
+        <if test="roleId != null">
+        		AND   SRP.SR_ID     =   #{roleId}
+        </if>
+        AND SP.SP_VISIBLE='Y'
+        ORDER BY SP.RANK
+	</select>
+
+</mapper>

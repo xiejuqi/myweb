@@ -1,0 +1,24 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<!-- MQ消息监听配置 -->
+	
+
+	<!-- 接收3PL发送过来自提点的订单状态 -->
+	<bean id="receiverLocalhostListenerContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="maxConcurrentConsumers" value="5" />
+		<property name="connectionFactory" ref="cachedConnectionFactory" />
+		<!-- 这里就是队列的名字，是一个接收队列的名字 -->
+		<property name="destination" ref="localhostQueue" />
+		<property name="messageListener" ref="receiverLocalhostQueueListener" />
+		<property name="transactionManager" ref="jmsTransactionManager" />
+	</bean>
+	
+</beans>

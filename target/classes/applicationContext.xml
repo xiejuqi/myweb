@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 引用Spring的多个Schema空间的格式定义文�?-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:lang="http://www.springframework.org/schema/lang" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"  
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/tx  
+        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd  
+        http://www.springframework.org/schema/lang
+		http://www.springframework.org/schema/lang/spring-lang-3.0.xsd
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/mvc  
+        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+		
+	<context:property-placeholder location="classpath:mqdeploy.properties"/>  
+	
+	<context:component-scan base-package="com.xiejuqi.dao.dao"/>
+		
+	<import resource="spring-mybatis.xml"/>	
+	<import resource="spring-mq-listener.xml"/>
+	<import resource="spring-mq.xml"/>
+	<!-- <import resource="spring-quartz.xml"/> -->
+	
+		
+	<!-- 扫描类包，将标注Spring注解的类自动转化Bean，同时完成Bean的注�?-->
+	<context:component-scan base-package="com.xiejuqi.service"/>
+	<context:component-scan base-package="com.xiejuqi.mq"/>
+	
+	<!-- 扫描配置的拦截器 -->
+	 <context:component-scan base-package="com.xiejuqi.interceptor"/>
+
+	<!-- 
+		[HandlerInterceptor1 preHandle...]
+		[HandlerInterceptor2 preHandle...]
+		[TestService....]
+		[HandlerInterceptor2 postHandle...]
+		[HandlerInterceptor1 postHandle...]
+		[HandlerInterceptor2 afterCompletion...]
+		[HandlerInterceptor1 afterCompletion...]
+	 -->
+	<mvc:interceptors>
+		 <!-- 使用bean定义�?��Interceptor，直接定义在mvc:interceptors根下面的Interceptor将拦截所有的请求 -->  
+		 <bean class="com.xiejuqi.interceptor.HandlerInterceptor1"/>
+	    <mvc:interceptor>  
+	        <mvc:mapping path="/displayExcelFile.html"/>  
+	        <!-- 定义在mvc:interceptor下面的表示是对特定的请求才进行拦截的 -->  
+	        <bean class="com.xiejuqi.interceptor.HandlerInterceptor2"/>  
+	    </mvc:interceptor> 
+	</mvc:interceptors>
+	
+</beans>

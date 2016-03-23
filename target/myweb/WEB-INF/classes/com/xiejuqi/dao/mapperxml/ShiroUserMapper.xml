@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xiejuqi.dao.icreate.ShiroUserMapper">
+
+
+	<resultMap type="com.xiejuqi.domain.ShiroUser" id="result-map-01" >
+		<result property="id" column="USER_ID" />
+		<result property="username" column="USER_USERNAME" />
+		<result property="password" column="USER_PASSWORD" />
+		<result property="roleId" column="ROLE_ID"/>
+		<result property="permissionId" column="PERMISSION_ID"/>
+	</resultMap>
+
+
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	
+	<sql id="select-base-01">
+		SELECT
+		u.USER_ID,
+		u.USER_USERNAME,
+		u.USER_PASSWORD,
+		r.ROLE_ID,
+		r.ROLE_NAME,
+		p.PERMISSION_ID,
+		p.PERMISSION_NAME
+		FROM
+		tbl_user as u,
+		tbl_role as r,
+		tbl_permission as p,
+		tbl_permission_role as pr,
+		tbl_role_user as ru
+		WHERE
+		u.USER_ID = ru.USER_ID
+		AND
+		r.ROLE_ID = ru.ROLE_ID
+		AND
+		p.PERMISSION_ID = pr.PERMISSION_ID
+		AND
+		r.ROLE_ID = pr.ROLE_ID
+	</sql>
+
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<select id="findUserByUsername" resultMap="result-map-01" parameterType="java.lang.String">
+		<include refid="select-base-01" />
+		AND
+		u.USER_USERNAME = #{username,jdbcType=VARCHAR} 
+	</select>
+
+</mapper>

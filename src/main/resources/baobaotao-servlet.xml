@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util
+    	http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+	<context:component-scan base-package="com.xiejuqi.web" />
+	<context:component-scan base-package="com.xiejuqi.dao" />
+	
+	<context:property-placeholder location="classpath:mqdeploy.properties"/> 
+	
+	<!-- 解决SpringMVC 返回json数据报406的错误start -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <util:list id="beanList">
+                <ref bean="mappingJacksonHttpMessageConverter" />
+            </util:list>
+        </property>
+    </bean>
+    
+    <bean id="mappingJacksonHttpMessageConverter"
+        class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/html;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
+	<!-- 解决SpringMVC 返回json数据报406的错误end -->
+	
+	<mvc:annotation-driven/>
+	
+	<!-- 集成Veloctiy -->
+	<bean id="velocityConfigurer"
+		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<property name="resourceLoaderPath" value="WEB-INF/velocity" />
+		<property name="configLocation" value="classpath:velocity.properties" />
+		<property name="velocityProperties">
+			<props>
+				<prop key="input.encoding">utf-8</prop>
+				<prop key="output.encoding">utf-8</prop>
+			</props>
+		</property>
+	</bean>
+
+
+	<!-- <bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver"> 
+		<property name="suffix" value=".vm"/> <property name="contentType" value="text/html;charset=utf-8"/> 
+		使用springMacro的对象 <property name="exposeSpringMacroHelpers" value="true"/> 
+		<property name="requestContextAttribute" value="content"/> <property name="exposeRequestAttributes" 
+		value="true"/> <property name="exposeSessionAttributes" value="true"/> spring的日期格式化 
+		<property name="dateToolAttribute" value="dateTool"/> velocity toolbox <property 
+		name="toolboxConfigLocation" value="/WEB-INF/velocity/velocity-tools.xml"/> 
+		</bean> -->
+
+
+	<!-- 集成JSP -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:viewClass="org.springframework.web.servlet.view.JstlView" p:prefix="/WEB-INF/jsp/"
+		p:suffix=".jsp" />
+	
+	<!-- 使用Spring自带的上传工具时需要此配置 http://gary0416.iteye.com/blog/1098912 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- set the max upload size100MB -->
+		<property name="maxUploadSize">
+			<value>104857600</value>
+		</property>
+		<property name="maxInMemorySize">
+			<value>4096</value>
+		</property>
+	</bean>
+	
+	
+
+
+</beans>

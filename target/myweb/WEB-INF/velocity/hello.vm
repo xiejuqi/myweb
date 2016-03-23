@@ -1,0 +1,30 @@
+<head>
+    <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="css/bootstrapv3.css">
+	<script src="js/bootstrapv3.js"></script>
+	<script src="js/bootstrap-paginator.js"></script>
+	<body>
+		<h1>
+			Velocty Index
+			<br/>
+			$mytools.test("velocity") 
+			<br/>
+			$date.get('yyyy-M-d H:m:s')
+			<br/>
+			$abc
+		</h1>
+
+		#if($newsList.isNotEmpty())
+			
+			#foreach($news in $newsList.getRecords())
+				<span>userId:</span>$news.userId
+				<br/>
+				<span>credits:</span>$news.credits
+				#parse("page.vm")
+			#end
+		
+			#showPaginator($newsList)
+		#end
+	</body>
+</head>
+

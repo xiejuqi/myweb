@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xiejuqi.dao.icreate.UserMapper">
+	<select id="SELECT-USER-BY-USERNAME"  resultMap="com.xiejuqi.dao.icreate.UserMapper.BaseResultMap">
+			SELECT * 
+			FROM 
+				t_user
+		<if test="userName != null">
+				WHERE user_name = #{userName}
+		</if>
+	</select>
+	
+	<select id="SELECT-USER-PAGE-BY-USERNAME"  resultMap="com.xiejuqi.dao.icreate.UserMapper.BaseResultMap">
+			SELECT * 
+			FROM 
+				t_user
+		<if test="userName != null">
+				WHERE user_name = #{userName}
+		</if>
+		<include refid="com.xiejuqi.base.Pagination" />
+	</select>
+	
+	<select id="SELECT-USER-COUNT-BY-USERNAME"  resultType="java.lang.Integer">
+			SELECT count(1)
+			FROM 
+				t_user
+		<if test="userName != null">
+				WHERE user_name = #{userName}
+		</if>
+	</select>
+	
+	<insert id="INSERT-USER">
+		INSERT INTO t_user 
+			(user_name,credits, PASSWORD,last_visit,last_ip) 
+			VALUES (
+			'三毛',
+			10,
+			123456, '2015-11-16 15:43:43',
+			'127.0.0.1'
+			);
+	</insert>
+	
+</mapper>

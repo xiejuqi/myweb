@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc 
+	      http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		  http://www.springframework.org/schema/beans 
+		  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		  http://www.springframework.org/schema/context 
+		  http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		  http://www.springframework.org/schema/aop 
+          http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
+	>
+	
+	<context:component-scan base-package="com.xiejuqi.quartz"/>
+	
+	    <!-- 配置调度程序quartz ，其中配置JobDetail有两种方�?	-->  
+        <!--	方式�?��使用JobDetailBean，任务类必须实现Job接口   
+        <bean id="myjob" class="org.springframework.scheduling.quartz.JobDetailBean">  
+	         <property name="name" value="exampleJob"></property>  
+	         <property name="jobClass" value="com.xiejuqi.quartz.SpringQtz"></property> 
+	         <property name="jobDataAsMap">
+					<map>
+						<entry key="service"><value>simple is the beat</value></entry>
+					</map>
+			 </property>
+        </bean> 
+         -->
+        
+        <!--运行时请将方式一注释掉！ -->  
+        <!-- 方式二：使用MethodInvokingJobDetailFactoryBean，任务类可以不实现Job接口，�?过targetMethod指定调用方法-->  
+        <!-- 定义目标bean和bean中的方法 -->
+        <bean id="SpringQtzJob" class="com.xiejuqi.quartz.SpringQtz"/>
+        <bean id="SpringQtzJobMethod" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	        <property name="targetObject">
+	            <ref bean="SpringQtzJob"/>
+	        </property>
+	        <property name="targetMethod">  <!-- 要执行的方法名称 -->
+	            <value>execute</value>
+	        </property>
+    	</bean>
+
+    <!-- ======================== 调度触发�?======================== -->
+    <bean id="CronTriggerBean" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail" ref="SpringQtzJobMethod"></property>
+        <property name="cronExpression" value="0/5 * * * * ?"></property>
+    </bean>
+
+    <!-- ======================== 调度工厂 ======================== -->
+    <bean id="SpringJobSchedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="CronTriggerBean"/>
+            </list>
+        </property>
+    </bean>  
+	
+	
+		
+	
+</beans>
